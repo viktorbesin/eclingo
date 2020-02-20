@@ -26,6 +26,8 @@ class Parser:
 
         if self._optimization > 0:
             self._optimization1()
+        if self._optimization > 4:
+            self._optimization5()
 
     def _add_grounding_rules(self):
         rules = []
@@ -109,3 +111,23 @@ class Parser:
                 if 'not_' not in epistemic.name:
                     atom_lit = 0-atom_lit
                 backend.add_rule([], [backend.add_atom(epistemic), atom_lit], False)
+
+    def _optimization5(self):
+        with self._candidates_gen.backend() as backend:
+            some_unknown = backend.add_atom(clingo.Function('some_unknown'))
+            some_unknown_not_holds = backend.add_atom(clingo.Function('some_unknown_not_holds'))
+            check = False
+            for epistemic, atom in self.epistemic_atoms.items():
+                if 'not_' not in epistemic.name:
+                    not_aux_lit = 0-backend.add_atom(epistemic)
+                    not_atom_lit = 0-backend.add_atom(atom)
+                    backend.add_rule([some_unknown],
+                                     [not_aux_lit],
+                                     False)
+                    backend.add_rule([some_unknown_not_holds],
+                                     [not_aux_lit, not_atom_lit],
+                                     False)
+                    check = True
+            if check:
+                backend.add_rule([], [some_unknown, 0-some_unknown_not_holds], False)
+            
