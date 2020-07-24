@@ -25,12 +25,9 @@ class Postprocessor:
                            if atom.positive else EpistemicSign.StrongNegation)
                            for atom in k_atoms]
             else:
-                symbols = [Symbol(atom.name.replace('aux_', '').replace('sn_', '')
-                           .replace('not_', ''), atom.arguments, True,
-                           EpistemicSign.BothNegations if 'not_sn_' in atom.name else
+                symbols = [Symbol(atom.name.replace('aux_', '').replace('sn_', ''), atom.arguments, True,
                            EpistemicSign.StrongNegation if 'sn_' in atom.name else
-                           EpistemicSign.Negation if 'not_' in atom.name else
-                           EpistemicSign.NoSign) for atom in model]
+                           EpistemicSign.NoSign) for atom in model if not "aux_not_" in atom.name]
         return Model(symbols)
 
 
