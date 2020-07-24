@@ -61,8 +61,8 @@ class Parser:
             if epistemic_term.arguments:
                 epistemic_arguments = (', ').join([str(argument)
                                                    for argument in epistemic_term.arguments])
-                rules.append(f'{epistemic_term.name}({epistemic_arguments}) \
-                    :- {negative}{term}({epistemic_arguments}), {body_string}.')
+                rules.append(f'{epistemic_term.name}({epistemic_arguments})' +
+                             f':- {negative}{term}({epistemic_arguments}), {body_string}.')
             else:
                 rules.append(f'{epistemic_term.name} :- {negative}{term}, {body_string}.')
 
@@ -77,6 +77,8 @@ class Parser:
                 for atom in self._candidates_gen.symbolic_atoms \
                         .by_signature(name, arity, positive):
                     gen_backend.add_rule([atom.literal], [], True)
+                for atom in self._candidates_test.symbolic_atoms \
+                        .by_signature(name, arity, positive):
                     test_backend.add_rule([atom.literal], [], True)
 
                     epistemic_symbol = atom.symbol
