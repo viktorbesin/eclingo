@@ -41,7 +41,8 @@ pip install .
 ```
 $ eclingo --help
 eclingo version 0.2.0
-usage: eclingo [-h] [-n MODELS] [-k] [-op OPTIMIZATION] [-c CONST]
+usage: eclingo [-h] [-n WORLD_VIEWS] [-a ANSWER_SETS] [-k] [-op OPTIMIZATION]
+               [-c CONST]
                input_files [input_files ...]
 
 positional arguments:
@@ -49,9 +50,12 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  -n MODELS, --models MODELS
-                        maximum number of models to compute (0 computes all
-                        models)
+  -n WORLD_VIEWS, --world-views WORLD_VIEWS
+                        maximum number of world views to compute (0 computes
+                        all world views)
+  -a ANSWER_SETS, --answer-sets ANSWER_SETS
+                        maximum number of answer sets to compute for each
+                        world view (0 computes all answer sets)
   -k, --k15             computes world views under K15 semantics
   -op OPTIMIZATION, --optimization OPTIMIZATION
                         number of optimization to use (0 for no optimizations)
@@ -119,31 +123,60 @@ Run `eclingo` passing the input files paths as arguments.
 $ eclingo test/eligible/eligible.lp test/eligible/input/eligible10.lp
 eclingo version 0.2.0
 Solving...
-Answer: 1
+World view: 1
 &k{ -eligible(van) } &k{ eligible(mary) } &k{ eligible(nancy) } &k{ eligible(paul) } &k{ eligible(sam) } &k{ eligible(tim) }
 SATISFIABLE
 
-Elapsed time: 0.008156 s
+World views     : 1+
+Elapsed time    : 0.005809 s
 ```
 > Note that you can provide several paths to split the problem encoding from its instances.
 
-#### Computing `n` models
+#### Computing `n` world views
 
-The `-n` flag allows the user to select the maximum number of models to compute (0 for all models).
+The `-n` flag allows the user to select the maximum number of world views to compute (0 for all world views).
 
 ```
 $ eclingo test/prog/input/prog02.lp -n 0
 eclingo version 0.2.0
 Solving...
-Answer: 1
+World view: 1
 &k{ a }
-Answer: 2
+World view: 2
 &k{ b }
 SATISFIABLE
 
-Elapsed time: 0.005810 s
+World views     : 2
+Elapsed time    : 0.001563 s
 ```
 > By default, `eclingo` computes just one model.
+
+#### Computing `n` answer sets for each world view
+
+The `-a` flag allows the user to select the maximum number of answer sets to compute for each computed world view (0 for all answer sets).
+
+```
+$ eclingo test/prog/input/prog02.lp -n 0 -a 0
+eclingo version 0.2.0
+Solving...
+World view: 1
+&k{ a }
+==> Begin World view <==
+Answer: 1
+a
+========================
+World view: 2
+&k{ b }
+==> Begin World view <==
+Answer: 1
+b
+========================
+SATISFIABLE
+
+World views     : 2
+Elapsed time    : 0.001868 s
+```
+> By default, `eclingo` does not compute any answer set for each world view.
 
 #### Solving a conformant planning problem
 We can use the `-c` flag to declare a constant.
@@ -152,11 +185,12 @@ In the case of a planning problem, this is useful to indicate the length of the 
 $ eclingo test/yale/yale.lp test/yale/input/yale04.lp -c length=4
 eclingo version 0.2.0
 Solving...
-Answer: 1
+World view: 1
 &k{ occurs(load, 0) } &k{ occurs(load, 2) } &k{ occurs(pull_trigger, 1) } &k{ occurs(pull_trigger, 3) }
 SATISFIABLE
 
-Elapsed time: 0.014135 s
+World views     : 1+
+Elapsed time    : 0.010448 s
 ```
 
 ## License

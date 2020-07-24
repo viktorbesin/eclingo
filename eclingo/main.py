@@ -12,11 +12,12 @@ __optimization__ = 3
 
 class Control:
 
-    def __init__(self, max_models=1, semantics=False, optimization=__optimization__):
-        self.models = 0
-        self.max_models = max_models
+    def __init__(self, max_world_views=1, semantics=False, optimization=__optimization__):
+        self.world_views = 0
+        self.max_world_views = max_world_views
         self.semantics = semantics
         self.optimization = optimization
+        self.exhausted = None
         self._candidates_gen = clingo.Control(['0', '--project'], logger=silent_logger)
         self._candidates_test = clingo.Control(['0'], logger=logger)
         self._epistemic_atoms = {}
@@ -55,12 +56,14 @@ class Control:
 
     def solve(self):
         solver = Solver(self._candidates_gen, self._candidates_test,
-                        self._epistemic_atoms, self.max_models)
+                        self._epistemic_atoms, self.max_world_views)
         postprocessor = Postprocessor(self._candidates_test, self._show_signatures)
 
-        for model, assumptions in solver.solve():
-            self.models += 1
-            yield postprocessor.postprocess(model, assumptions)
+        for world_view, assumptions in solver.solve():
+            self.world_views = solver.world_views
+            yield postprocessor.postprocess(world_view, assumptions)
+
+        self.exhausted = solver.exhausted
 
         del solver
         del postprocessor

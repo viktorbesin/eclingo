@@ -15,7 +15,7 @@ OUTPUT_YALE_PATH = 'test/yale/output/'
 
 def test_prog_g91():
     for i in range(1, 8):
-        eclingo_control = eclingo.Control(max_models=0,
+        eclingo_control = eclingo.Control(max_world_views=0,
                                           semantics=False,
                                           optimization=eclingo.__optimization__)
         input_path = INPUT_PROG_PATH + f'prog{i:02d}.lp'
@@ -31,7 +31,7 @@ def test_prog_g91():
 
 def test_prog_k15():
     for i in range(1, 8):
-        eclingo_control = eclingo.Control(max_models=0,
+        eclingo_control = eclingo.Control(max_world_views=0,
                                           semantics=True,
                                           optimization=eclingo.__optimization__)
         input_path = INPUT_PROG_PATH + f'prog{i:02d}.lp'
@@ -47,7 +47,7 @@ def test_prog_k15():
 
 def test_eligible_g91():
     for i in range(1, 17):
-        eclingo_control = eclingo.Control(max_models=0,
+        eclingo_control = eclingo.Control(max_world_views=0,
                                           semantics=False,
                                           optimization=eclingo.__optimization__)
         input_path = INPUT_ELIGIBLE_PATH + f'eligible{i:02d}.lp'
@@ -64,7 +64,7 @@ def test_eligible_g91():
 
 def test_eligible_k15():
     for i in range(1, 17):
-        eclingo_control = eclingo.Control(max_models=0,
+        eclingo_control = eclingo.Control(max_world_views=0,
                                           semantics=True,
                                           optimization=eclingo.__optimization__)
         input_path = INPUT_ELIGIBLE_PATH + f'eligible{i:02d}.lp'
@@ -82,7 +82,7 @@ def test_eligible_k15():
 def test_yale_g91():
     for i in range(1, 9):
         if i != 6:
-            eclingo_control = eclingo.Control(max_models=0,
+            eclingo_control = eclingo.Control(max_world_views=0,
                                               semantics=False,
                                               optimization=eclingo.__optimization__)
             input_path = INPUT_YALE_PATH + f'yale{i:02d}.lp'

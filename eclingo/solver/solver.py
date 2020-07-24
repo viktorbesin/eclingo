@@ -1,11 +1,12 @@
 class Solver:
 
-    def __init__(self, candidates_gen, candidates_test, epistemic_atoms, max_models):
-        self.models = 0
+    def __init__(self, candidates_gen, candidates_test, epistemic_atoms, max_world_views):
+        self.world_views = 0
+        self.exhausted = None
         self._candidates_gen = candidates_gen
         self._candidates_test = candidates_test
         self._epistemic_atoms = epistemic_atoms
-        self._max_models = max_models
+        self._max_world_views = max_world_views
 
     def solve(self):
         with self._candidates_gen.solve(yield_=True) as candidates_gen_handle:
@@ -65,8 +66,9 @@ class Solver:
                                     break
 
                 if test:
-                    self.models += 1
+                    self.world_views += 1
                     yield model.symbols(shown=True), assumptions
 
-                    if self.models == self._max_models:
+                    if self.world_views == self._max_world_views:
                         break
+            self.exhausted = candidates_gen_handle.get().exhausted

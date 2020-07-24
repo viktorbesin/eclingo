@@ -31,13 +31,16 @@ class Postprocessor:
                            EpistemicSign.StrongNegation if 'sn_' in atom.name else
                            EpistemicSign.Negation if 'not_' in atom.name else
                            EpistemicSign.NoSign) for atom in model]
-        return Model(symbols)
+
+        return Model(symbols, self._candidates_test, assumptions)
 
 
 class Model:
 
-    def __init__(self, symbols):
+    def __init__(self, symbols, control, assumptions):
         self.symbols = symbols
+        self.control = control
+        self.assumptions = assumptions
 
     def __repr__(self):
         return ' '.join(map(str, sorted(self.symbols)))
@@ -47,6 +50,17 @@ class Model:
 
     def __lt__(self, other):
         return self.symbols < other.symbols
+
+    def get_answer_sets(self, max_answer_sets):
+        count = 0
+        self.control.configuration.solve.enum_mode = 'auto'
+        with self.control.solve(yield_=True, assumptions=self.assumptions) \
+                as control_handle:
+            for answer_set in control_handle:
+                count += 1
+                yield AnswerSet(answer_set.symbols(atoms=True))
+                if count == max_answer_sets:
+                    break
 
 
 class Symbol:
@@ -70,6 +84,15 @@ class Symbol:
     def __lt__(self, other):
         return (self.epistemic_sign, self.name, self.arguments) \
             < (other.epistemic_sign, other.name, other.arguments)
+
+
+class AnswerSet:
+
+    def __init__(self, answer_set):
+        self.answer_set = answer_set
+
+    def __repr__(self):
+        return ' '.join(filter(lambda x: "aux_" not in x, map(str, sorted(self.answer_set))))
 
 
 class _EpistemicNoSign:
