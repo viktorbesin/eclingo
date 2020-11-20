@@ -1,5 +1,5 @@
 import clingo
-from eclingo.parser.observer import WFMObserver
+from parser.observer import WFMObserver
 
 
 class Parser:

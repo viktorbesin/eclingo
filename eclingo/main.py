@@ -1,9 +1,14 @@
 import clingo
-from eclingo.preprocessor.preprocessor import G94Preprocessor, K15Preprocessor
-from eclingo.parser.parser import Parser
-from eclingo.solver.solver import Solver
-from eclingo.postprocessor.postprocessor import Postprocessor
-from eclingo.utils.logger import logger, silent_logger
+from preprocessor.preprocessor import G94Preprocessor, K15Preprocessor
+from parser.parser import Parser
+from solver.solver import Solver
+from postprocessor.postprocessor import Postprocessor
+from utils.logger import logger, silent_logger
+
+from typing import NamedTuple, Union, List, Callable, Tuple, Any
+from clingo import Symbol, TruthValue
+from groundprogram import GroundProgram, ClingoRule, ClingoOutputAtom, ClingoWeightRule, ClingoProject, ClingoExternal
+
 
 
 __version__ = '0.2.0'
@@ -22,6 +27,10 @@ class Control:
         self._epistemic_atoms = {}
         self._predicates = []
         self._show_signatures = set()
+
+        # add oberserver for grounding
+        self.ground_program = GroundProgram()
+        self._candidates_gen.register_observer(Observer(self.ground_program))
 
     def add(self, program):
         if self.semantics:
@@ -64,3 +73,24 @@ class Control:
 
         del solver
         del postprocessor
+
+
+class Observer:
+
+    def __init__(self, program):
+        self.program = program
+
+    def rule(self, choice: bool, head: List[int], body: List[int]) -> None:
+        self.program.objects.append(ClingoRule(choice=choice, head=head, body=body))
+
+    def output_atom(self, symbol: Symbol, atom: int) -> None:
+        self.program.objects.append(ClingoOutputAtom(symbol=symbol, atom=atom))
+
+    def weight_rule(self, choice: bool, head: List[int], lower_bound: int, body: List[Tuple[int, int]]) -> None:
+        self.program.objects.append(ClingoWeightRule(choice, head, body, lower_bound))
+
+    def project(self, atoms: List[int]) -> None:
+        self.program.objects.append(ClingoProject(atoms))
+
+    def external(self, atom: int, value: TruthValue) -> None:
+        self.program.objects.append(ClingoExternal(atom, value))

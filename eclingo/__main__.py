@@ -1,6 +1,6 @@
 import argparse
 from time import perf_counter as timer
-import eclingo.main as eclingo
+import main as eclingo
 
 
 def main():
@@ -34,6 +34,16 @@ def main():
             eclingo_control.add_const(name, term)
 
     eclingo_control.parse()
+
+    # print grounded program
+    print("------------------------------------------------------------")
+    print("   Grounded Program")
+    print("------------------------------------------------------------")
+    print(eclingo_control.ground_program.objects)
+    print("------------------------------------------------------------")
+    print(eclingo_control.ground_program)
+    print("-------------------------------------------------------------")
+
     print('Solving...')
     for model in eclingo_control.solve():
         print(f'Answer: {eclingo_control.models}\n{model}')
