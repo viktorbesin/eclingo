@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, 'libs/eclingo/eclingo')
+
 import clingo
 from preprocessor.preprocessor import G94Preprocessor, K15Preprocessor
 from parser.parser import Parser
@@ -18,6 +21,7 @@ __optimization__ = 3
 class Control:
 
     def __init__(self, max_models=1, semantics=False, optimization=__optimization__):
+
         self.models = 0
         self.max_models = max_models
         self.semantics = semantics
